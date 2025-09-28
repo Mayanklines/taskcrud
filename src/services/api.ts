@@ -1,9 +1,8 @@
 import { Task, Comment, ApiResponse } from '../types';
 
-const API_BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
+const API_BASE_URL = 'http://localhost:5000/api';
 
 const headers = {
-  'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
   'Content-Type': 'application/json',
 };
 

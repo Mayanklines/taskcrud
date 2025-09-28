@@ -1,17 +1,18 @@
-# Task Management System
+# Task Management System - Flask + React
 
-A comprehensive task management application with comments functionality, built with React, TypeScript, and Supabase.
+A comprehensive task management application with comments functionality, built with Flask backend API and React frontend.
 
 ## Features
 
-### Backend APIs (Task #1)
+### Backend API (Flask)
 - **Tasks CRUD API**: Complete Create, Read, Update, Delete operations for tasks
 - **Comments CRUD API**: Full comment management system for tasks
-- **Proper API Design**: RESTful endpoints with proper HTTP status codes
+- **RESTful Design**: Proper HTTP methods and status codes
 - **Data Validation**: Input validation and error handling
-- **Automated Tests**: Comprehensive test suite for all API endpoints
+- **SQLite Database**: Local database with SQLAlchemy ORM
+- **Automated Tests**: Comprehensive test suite using unittest
 
-### Frontend Interface (Task #2)
+### Frontend Interface (React)
 - **Task Management**: Create, edit, delete, and organize tasks
 - **Kanban Board**: Visual task organization by status (To Do, In Progress, Completed)
 - **Comments System**: Add, edit, and delete comments on tasks
@@ -21,75 +22,160 @@ A comprehensive task management application with comments functionality, built w
 ## API Endpoints
 
 ### Tasks
-- `GET /functions/v1/tasks` - Get all tasks
-- `GET /functions/v1/tasks/:id` - Get single task with comments
-- `POST /functions/v1/tasks` - Create new task
-- `PUT /functions/v1/tasks/:id` - Update task
-- `DELETE /functions/v1/tasks/:id` - Delete task
+- `GET /api/tasks` - Get all tasks
+- `GET /api/tasks/:id` - Get single task with comments
+- `POST /api/tasks` - Create new task
+- `PUT /api/tasks/:id` - Update task
+- `DELETE /api/tasks/:id` - Delete task
 
 ### Comments
-- `GET /functions/v1/comments` - Get all comments
-- `GET /functions/v1/comments?task_id=:id` - Get comments for task
-- `GET /functions/v1/comments/:id` - Get single comment
-- `POST /functions/v1/comments` - Create new comment
-- `PUT /functions/v1/comments/:id` - Update comment
-- `DELETE /functions/v1/comments/:id` - Delete comment
+- `GET /api/comments` - Get all comments
+- `GET /api/comments?task_id=:id` - Get comments for task
+- `GET /api/comments/:id` - Get single comment
+- `POST /api/comments` - Create new comment
+- `PUT /api/comments/:id` - Update comment
+- `DELETE /api/comments/:id` - Delete comment
+
+### Health Check
+- `GET /api/health` - API health status
 
 ## Database Schema
 
 ### Tasks Table
-- `id` (uuid, primary key)
-- `title` (text, required)
+- `id` (integer, primary key)
+- `title` (string, required)
 - `description` (text, optional)
 - `status` (enum: todo, in_progress, completed)
-- `created_at` (timestamp)
-- `updated_at` (timestamp)
+- `created_at` (datetime)
+- `updated_at` (datetime)
 
 ### Comments Table
-- `id` (uuid, primary key)
-- `task_id` (uuid, foreign key to tasks)
+- `id` (integer, primary key)
+- `task_id` (integer, foreign key to tasks)
 - `content` (text, required)
-- `created_at` (timestamp)
-- `updated_at` (timestamp)
+- `created_at` (datetime)
+- `updated_at` (datetime)
 
 ## Setup Instructions
 
-1. **Configure Supabase**:
-   - Click the "Supabase" button in the settings panel
-   - This will set up your database connection and environment variables
+### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- npm or yarn
 
-2. **Run the Application**:
+### Installation
+
+1. **Install Python Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Install Node Dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Run the Application**:
+   
+   **Option 1: Run both servers simultaneously**
+   ```bash
+   npm run dev:full
+   ```
+   
+   **Option 2: Run servers separately**
+   
+   Terminal 1 (Flask Backend):
+   ```bash
+   npm run flask
+   # or
+   cd backend && python app.py
+   ```
+   
+   Terminal 2 (React Frontend):
    ```bash
    npm run dev
    ```
 
-3. **Run Tests**:
-   ```bash
-   node tests/api.test.js
-   ```
+4. **Access the Application**:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:5000
+
+### Testing
+
+**Run Flask API Tests**:
+```bash
+cd backend && python test_api.py
+```
+
+**Test API Endpoints**:
+```bash
+# Health check
+curl http://localhost:5000/api/health
+
+# Get all tasks
+curl http://localhost:5000/api/tasks
+
+# Create a task
+curl -X POST http://localhost:5000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Test Task", "description": "Test Description", "status": "todo"}'
+```
 
 ## Architecture
 
+- **Backend**: Flask with SQLAlchemy ORM
 - **Frontend**: React with TypeScript
-- **Backend**: Supabase Edge Functions
-- **Database**: PostgreSQL (via Supabase)
+- **Database**: SQLite (local development)
 - **Styling**: Tailwind CSS
 - **API Client**: Custom TypeScript API client
+- **State Management**: React hooks
 
-## Security Features
+## Development Features
 
-- Row Level Security (RLS) enabled
-- Input validation and sanitization
-- Proper error handling
-- CORS configuration
+- **Hot Reload**: Both Flask and React support hot reloading
+- **CORS Enabled**: Cross-origin requests configured
+- **Error Handling**: Comprehensive error handling on both ends
+- **Type Safety**: Full TypeScript support
+- **Responsive Design**: Mobile-first approach
 
-## Testing
+## Project Structure
 
-The test suite includes:
-- Task CRUD operations testing
-- Comment CRUD operations testing
-- Data validation testing
-- Error handling verification
-- API endpoint coverage
+```
+├── backend/
+│   ├── app.py              # Flask application
+│   ├── test_api.py         # API tests
+│   └── tasks.db            # SQLite database (auto-created)
+├── src/
+│   ├── components/         # React components
+│   ├── services/          # API client
+│   ├── types/             # TypeScript types
+│   └── App.tsx            # Main React component
+├── requirements.txt        # Python dependencies
+└── package.json           # Node.js dependencies
+```
 
-Run tests with: `node tests/api.test.js`
+## API Response Format
+
+All API responses follow this format:
+
+**Success Response**:
+```json
+{
+  "data": { ... }
+}
+```
+
+**Error Response**:
+```json
+{
+  "error": "Error message"
+}
+```
+
+## Status Codes
+
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request (validation error)
+- `404` - Not Found
+- `500` - Internal Server Error
